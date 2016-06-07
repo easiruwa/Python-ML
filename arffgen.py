@@ -225,7 +225,7 @@ def getVarience(task, index, output):
     
     variance = numpy.var(vals)
     
-    output.write(str(variance) + ',') # value must be a string in order to write 
+    output.write(str(variance) + ', ') # value must be a string in order to write 
                                       # to the output file
                                       
                                       
@@ -238,7 +238,7 @@ def getKurtosis(task, index, output):
     
     kurotsis = sp.kurtosis(vals)
     
-    output.write(str(kurtosis) + ',') # value must be a string in order to write 
+    output.write(str(kurtosis) + ', ') # value must be a string in order to write 
                                       # to the output file    
 
 def writeHeader(channels,output,conditions,relation):
