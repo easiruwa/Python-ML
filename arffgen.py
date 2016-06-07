@@ -19,6 +19,7 @@
 
 import csv
 import math
+import numpy
 
 def readMarks(marks):
     # this function reads the marks file and returns a list of lists
@@ -221,7 +222,7 @@ def getVarience(task, index, output):
         vals.append(task[i][index])
     #vals is a list of one channel's values during the current task
     
-    variance = statistics.variance(vals)
+    variance = numpy.var(vals)
     
     output.write(str(variance)) # value must be a string in order to write 
                                 # to the output file
