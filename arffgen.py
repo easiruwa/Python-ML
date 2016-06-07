@@ -236,7 +236,7 @@ def getKurtosis(task, index, output):
         vals.append(task[i][index])
     #vals is a list of one channel's values during the current task
     
-    kurotsis = sp.kurtosis(vals)
+    kurotsis = sp.stats.kurtosis(vals)
     
     output.write(str(kurtosis) + ', ') # value must be a string in order to write 
                                       # to the output file    
