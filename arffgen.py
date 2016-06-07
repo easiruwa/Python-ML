@@ -213,12 +213,26 @@ def getPLA(task,index,output):
     output.write(str(avgSlope)) # value must be a string in order to write 
                                 # to the output file
     output.write(', ')
+    
+#Created by Mitchel Herman and Sindy Liu Summer 2016
+def getVarience(task, index, output):
+    vals = []
+    for i in range(len(task)):
+        vals.append(task[i][index])
+    #vals is a list of one channel's values during the current task
+    
+    variance = statistics.variance(vals)
+    
+    output.write(str(variance)) # value must be a string in order to write 
+                                # to the output file
+    output.write(', ')
+    
 
 def writeHeader(channels,output,conditions,relation):
     fileTypes = ['deoxy', 'oxy']
     period = ['first_half', 'second_half', 'total'] 
     attributes = ['slope', 'average', 'max', 'min', 'full_width_at_half_max',
-                  'PLA_1', 'PLA_2', 'PLA_3', 'PLA_4', 'PLA_5', 'PLA_Average']
+                  'PLA_1', 'PLA_2', 'PLA_3', 'PLA_4', 'PLA_5', 'PLA_Average', 'variance']
     # write the relation and all of the attribute lines to the output file
     output.write('@RELATION ' + relation + '\r\n')
     for i in range(1,channels+1):
@@ -248,7 +262,7 @@ def writeTasks(task,channels,output):
         secondHalf.append(task[i])
     
     # a list of all of the functions to be called on the data    
-    functions = [getAverage, getMax, getMin, getSlope, getFWHM, getPLA]
+    functions = [getAverage, getMax, getMin, getSlope, getFWHM, getPLA, getVariance]
 
     # calls all of the functions on all of the channels for the given task
     #for i in range(1, channels+1):
