@@ -19,7 +19,8 @@
 
 import csv
 import math
-import numpy
+import numpy as np
+import scipy as sp
 
 def readMarks(marks):
     # this function reads the marks file and returns a list of lists
@@ -226,6 +227,19 @@ def getVarience(task, index, output):
     
     output.write(str(variance) + ',') # value must be a string in order to write 
                                       # to the output file
+                                      
+                                      
+#Created by Mitchel Herman and Sindy Liu Summer 2016
+def getKurtosis(task, index, output):
+    vals = []
+    for i in range(len(task)):
+        vals.append(task[i][index])
+    #vals is a list of one channel's values during the current task
+    
+    kurotsis = sp.kurtosis(vals)
+    
+    output.write(str(kurtosis) + ',') # value must be a string in order to write 
+                                      # to the output file    
 
 def writeHeader(channels,output,conditions,relation):
     fileTypes = ['deoxy', 'oxy']
@@ -261,7 +275,7 @@ def writeTasks(task,channels,output):
         secondHalf.append(task[i])
     
     # a list of all of the functions to be called on the data    
-    functions = [getAverage, getMax, getMin, getSlope, getFWHM, getPLA, getVariance]
+    functions = [getAverage, getMax, getMin, getSlope, getFWHM, getPLA, getVariance, getKurtosis]
 
     # calls all of the functions on all of the channels for the given task
     #for i in range(1, channels+1):
