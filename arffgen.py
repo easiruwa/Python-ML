@@ -245,7 +245,7 @@ def writeHeader(channels,output,conditions,relation):
     fileTypes = ['deoxy', 'oxy']
     period = ['first_half', 'second_half', 'total'] 
     attributes = ['slope', 'average', 'max', 'min', 'full_width_at_half_max',
-                  'PLA_1', 'PLA_2', 'PLA_3', 'PLA_4', 'PLA_5', 'PLA_Average', 'variance']
+                  'PLA_1', 'PLA_2', 'PLA_3', 'PLA_4', 'PLA_5', 'PLA_Average', 'variance', 'kurtosis']
     # write the relation and all of the attribute lines to the output file
     output.write('@RELATION ' + relation + '\r\n')
     for i in range(1,channels+1):
