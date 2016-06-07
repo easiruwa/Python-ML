@@ -19,6 +19,7 @@
 
 import csv
 import math
+import numpy as np
 
 def readMarks(marks):
     # this function reads the marks file and returns a list of lists
@@ -213,12 +214,28 @@ def getPLA(task,index,output):
     output.write(str(avgSlope)) # value must be a string in order to write 
                                 # to the output file
     output.write(', ')
+    
+def getZeroCrossings(task, index, output):
+    vals = []
+    for i in range(len(task)):
+        vals.append(task[i][index])
+    #vals is a list of one channel's values during the current task
+    
+    oldSign = np.sign(vals[0])
+    crossings = 0
+    for number in vals:
+        currSign = np.sign(number)
+        if(oldSign != currSign and currSign != 0):
+            crossings += 1
+        oldSign = currSign if currSign != 0 else oldSign
+        
+    
 
 def writeHeader(channels,output,conditions,relation):
     fileTypes = ['deoxy', 'oxy']
     period = ['first_half', 'second_half', 'total'] 
     attributes = ['slope', 'average', 'max', 'min', 'full_width_at_half_max',
-                  'PLA_1', 'PLA_2', 'PLA_3', 'PLA_4', 'PLA_5', 'PLA_Average']
+                  'PLA_1', 'PLA_2', 'PLA_3', 'PLA_4', 'PLA_5', 'PLA_Average', 'zeroCrossings']
     # write the relation and all of the attribute lines to the output file
     output.write('@RELATION ' + relation + '\r\n')
     for i in range(1,channels+1):
@@ -248,7 +265,7 @@ def writeTasks(task,channels,output):
         secondHalf.append(task[i])
     
     # a list of all of the functions to be called on the data    
-    functions = [getAverage, getMax, getMin, getSlope, getFWHM, getPLA]
+    functions = [getAverage, getMax, getMin, getSlope, getFWHM, getPLA, getZeroCrossings]
 
     # calls all of the functions on all of the channels for the given task
     #for i in range(1, channels+1):
