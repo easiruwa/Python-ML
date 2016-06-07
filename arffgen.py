@@ -224,10 +224,8 @@ def getVarience(task, index, output):
     
     variance = numpy.var(vals)
     
-    output.write(str(variance)) # value must be a string in order to write 
-                                # to the output file
-    output.write(', ')
-    
+    output.write(str(variance) + ',') # value must be a string in order to write 
+                                      # to the output file
 
 def writeHeader(channels,output,conditions,relation):
     fileTypes = ['deoxy', 'oxy']
