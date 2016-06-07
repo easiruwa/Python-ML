@@ -229,7 +229,9 @@ def getZeroCrossings(task, index, output):
             crossings += 1
         oldSign = currSign if currSign != 0 else oldSign
         
-    
+    output.write(str(crossings) + ', ') # value must be a string in order to write 
+                                        # to the output file
+        
 
 def writeHeader(channels,output,conditions,relation):
     fileTypes = ['deoxy', 'oxy']
