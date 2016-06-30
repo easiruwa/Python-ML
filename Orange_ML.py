@@ -391,18 +391,19 @@ def ML_Algos(data,csv_rows,knear,n):
 # Feature Selection N = (set this, set to 100 currently).
 # Does for the .arff (BSP) and .tab (SAX) into one .csv Excel file.
 def orange(data,knear,n):
-    data1 = Orange.data.Table((data+"_Arff"))
-    data2 = Orange.data.Table((data+"_Sax_Output"))  
+    data1 = Orange.data.Table((data))
+    #data2 = Orange.data.Table((data+"_Sax_Output"))  
     csv_rows = [["No Feature Selection BSP","","","","","","","","","",
                  "Feature Selection N/3 BSP", "","","","","","","","","",
                  "Feature Selection N/10 BSP","","","","","","","","","",
                  "Feature Selection N = 100 BSP"]]
     
     csv_rows = ML_Algos(data1,csv_rows,knear,n)
-    csv_rows.append([])
-    csv_rows.append(["No Feature Selection SAX","","","","","","","","","",
-                 "Feature Selection N/3 SAX", "","","","","","","","","",
-                 "Feature Selection N/10 SAX","","","","","","","","","",
-                 "Feature Selection N = 100 SAX"])
+    #csv_rows.append([])
+    #csv_rows.append(["No Feature Selection SAX","","","","","","","","","",
+                 #"Feature Selection N/3 SAX", "","","","","","","","","",
+                 #"Feature Selection N/10 SAX","","","","","","","","","",
+                 #"Feature Selection N = 100 SAX"])
     
-    return ML_Algos(data2,csv_rows,knear,n)
+    #return ML_Algos(data1, csv_rows,knear,n) # CHECK TO MAKE SURE THIS IS RETURNING THE CORRECT DATA
+    return csv_rows
