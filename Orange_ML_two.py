@@ -255,10 +255,10 @@ def ML_Algos(train_set,test_set,csv_rows,knear,n):
 # This is for learn and test on test data
 # Need a train_set (IE: 3001-3009 = train, test on 3010)
 # Need a test_set (IE: 1 subject, 3010)
-def orange_two(starter,test_set,knear,n):
-    train_set1 = Orange.data.Table("All_"+starter+"000_Data_No_"
+def orange_two(test_set,knear,n):
+    train_set1 = Orange.data.Table("All_Test_Data_No_"
                                    +test_set+"_Arff")
-    train_set2 = Orange.data.Table("All_"+starter+"000_Data_No_"+test_set
+    train_set2 = Orange.data.Table("All_Test_Data_No_"+test_set
                                    +"_Sax_Output")
     test_set1 = Orange.data.Table(test_set+"_All_Data_Arff")
     test_set2 = Orange.data.Table(test_set+"_All_Data_Sax_Output")
