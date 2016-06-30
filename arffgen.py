@@ -35,7 +35,7 @@ def readMarks(marks):
     # each inner list represents one line in the marks file, so the
     # start, end, and condition values for one task
     marksFile = csv.reader(open(marks))
-    rows = []
+    rows = [] 
     for row in marksFile:
         rows.append(row)
     rows.pop(0)  # this removes the unwanted header from the file
