@@ -19,7 +19,17 @@
 
 import csv
 import math
+import numpy as np
+from scipy import stats
+import os
 
+def getDataType(name):
+    data_type = ""
+    for ch in name:
+        if(ch == '_'):
+            return data_type
+        data_type += ch
+        
 def readMarks(marks):
     # this function reads the marks file and returns a list of lists
     # each inner list represents one line in the marks file, so the
@@ -39,29 +49,50 @@ def boundaries(marks):
     start = int(item[0])
     end = int(item[1])
     condition = int(item[2])
-    return start, end, condition
-    
-def readfNIRS(name):
-    # this function makes a list of lists called rows2 of all of the fNIRS data
-    # each inner list is one row in the fNIRS data (so all of the 
-    # channels' data from one scan)
+    return start, end, condition    
+            
+
+def readData(name, datatype):
     file = csv.reader(open(name))
     rows1 = []
     for row in file:
         rows1.append(row)
         
-        # the fNIRS data doesn't actually start until the 4th line
-        # so we remove the unwanted lines here
-    for i in range(2):
-        rows1.pop(0)
-        
     length = len(rows1) # this ends up being the number of scans in the data
     rows2 = []
-    # there are also extra columns after the fNIRS data
-    # so we remove those unwanted columns here
-    for i in range(length):
-        rows2.append(rows1[i][0:53])
-    return rows2
+    
+    if datatype.upper() == 'FNIRS':
+        print("name: " + name)
+        # the fNIRS data doesn't actually start until the 42nd line
+        # so we remove the unwanted lines here
+        for i in range(2):
+            rows1.pop(0)
+        #there are also extra columns after the fNIRS data
+        #so we remove those unwanted columns here
+        print(length)
+        for i in range(length - 2): # -2 
+            rows2.append(rows1[i][0:53])
+        return rows2
+    elif datatype.upper() == 'EEG':
+        rows1.pop(0) # get rid of first row of labels
+        for i in range((length)-1):
+            rows2.append(rows1[i][:])
+        return rows2
+    
+    elif datatype.upper() == 'ECG':
+        #for i in range(27): # remove extra rows from the top
+            #rows1.pop(0)
+
+        for i in range(length):
+            rows2.append(rows1[1][:]) 
+        return rows2
+
+    elif datatype.upper() == 'EDA':
+        for i in range(2):
+            rows1.pop(0)
+        for i in range(length):
+            rows2.append(rows1[i][:])
+
 
 def makeNums(list):
     # this function converts the string values from the fNIRS data 
@@ -199,11 +230,12 @@ def getPLA(task,index,output):
         for r in range(len(segment)):
             sum1 += (r - mean)**2
         stdev = math.sqrt((1.0 / len(segment)) * sum1)  # standard deviation
+        stdev += 1 # I FUCKED WITH THIS
         avg = sum(vals) / len(vals)
         sum2 = 0
         for k in range(len(segment)):
             sum2 += float(((k - mean) * (segment[k] - avg))) / (stdev**2)
-        slope = (1.0 / (len(segment) - 1)) * sum2
+        slope = (1.0 / (len(segment))) * sum2 #I FUCKED WITH THIS
         output.write(str(slope)+', ')  # value must be a string in order 
                                        # to write to the output file
         slopeSum += slope
@@ -214,11 +246,94 @@ def getPLA(task,index,output):
                                 # to the output file
     output.write(', ')
 
-def writeHeader(channels,output,conditions,relation):
-    fileTypes = ['deoxy', 'oxy']
-    period = ['first_half', 'second_half', 'total'] 
+#Created by Mitchel Herman and Sindy Liu Summer 2016
+def getVariance(task, index, output):
+    vals = []
+    for i in range(len(task)):
+        vals.append(task[i][index])
+    #vals is a list of one channel's values during the current task
+    
+    variance = np.var(vals)
+    
+    output.write(str(variance) + ', ') # value must be a string in order to write 
+                                      # to the output file
+                                      
+                                      
+#Created by Mitchel Herman and Sindy Liu Summer 2016
+def getKurtosis(task, index, output):
+    vals = []
+    for i in range(len(task)):
+        vals.append(task[i][index])
+    #vals is a list of one channel's values during the current task
+    
+    kurtosis = stats.kurtosis(vals)
+    
+    output.write(str(kurtosis) + ', ') # value must be a string in order to write 
+                                      # to the output file  
+                                      
+#Created by Mitchel Herman and Sindy Liu Summer 2016
+def getZeroCrossings(task, index, output):
+    vals = []
+    for i in range(len(task)):
+        vals.append(task[i][index])
+    #vals is a list of one channel's values during the current task
+    
+    oldSign = np.sign(vals[0])
+    crossings = 0
+    for number in vals:
+        currSign = np.sign(number)
+        if(oldSign != currSign and currSign != 0):
+            crossings += 1
+        oldSign = currSign if currSign != 0 else oldSign
+        
+    output.write(str(crossings) + ', ') # value must be a string in order to write 
+                                        # to the output file
+                                        
+#Created by Mitchel Herman and Sindy Liu Summer 2016
+def getSkewness(task,index,output):
+    vals = []
+    for i in range(len(task)):
+        vals.append(task[i][index])
+    #vals is a list of one channel's values during the current task
+    
+    skewness = stats.skew(vals)
+    output.write(str(skewness) + ', ')
+
+#Created by Mitchel Herman and Sindy Liu Summer 2016
+def getRMS(task, index, output):
+    vals = []
+    for i in range(len(task)):
+        vals.append(task[i][index])
+    #vals is a list of one channel's values during the current task
+    
+    squares = []
+    for val in vals:
+        squares.append(val*val)
+    
+    average = sum(squares) / len(squares)
+    
+    RMS = math.sqrt(average)
+    output.write(str(RMS) + ', ') # value must be a string in order to write 
+                                      # to the output file
+
+def writeHeader(channels,output,conditions,relation,datatype):
+    if datatype.upper() == 'EEG':
+        fileTypes = ['thetaslow', 'thetafast', 'thetatoal', 'alphaslow',
+                     'alphafast', 'alphatotal', 'beta', 'gamma', 'sigma']
+    elif datatype.upper() ==  'FNIRS':
+        fileTypes = ['deoxy', 'oxy']
+    elif datatype.upper() == 'ECG':
+        fileTypes = ['ecg']
+    elif datatype.upper() == 'EDA':
+        fileTypes = ['eda']
+    
+    period = ['first_half', 'second_half', 'total']
+    
     attributes = ['slope', 'average', 'max', 'min', 'full_width_at_half_max',
-                  'PLA_1', 'PLA_2', 'PLA_3', 'PLA_4', 'PLA_5', 'PLA_Average']
+                  'PLA_1', 'PLA_2', 'PLA_3', 'PLA_4', 'PLA_5', 'PLA_Average',]                
+    if(datatype.upper() == 'FNIRS'):
+        attributes += ['variance', 'kurtosis', 'zero_crossings', 'skewness', 'RMS']
+
     # write the relation and all of the attribute lines to the output file
     output.write('@RELATION ' + relation + '\r\n')
     for i in range(1,channels+1):
@@ -232,7 +347,7 @@ def writeHeader(channels,output,conditions,relation):
     output.write('@ATTRIBUTE condition ' + conditions + '\r\n')  
     output.write('@data \r\n')    
 
-def writeTasks(task,channels,output):
+def writeTasks(task,channels,output,datatype):
     # this calls all of the functions on the given task for the first half, 
     # second half, and entirety
     # of the data from the given task
@@ -249,6 +364,8 @@ def writeTasks(task,channels,output):
     
     # a list of all of the functions to be called on the data    
     functions = [getAverage, getMax, getMin, getSlope, getFWHM, getPLA]
+    if(datatype.upper() ==  'FNIRS'):
+        functions += [getVariance, getKurtosis, getZeroCrossings, getSkewness , getRMS]
 
     # calls all of the functions on all of the channels for the given task
     #for i in range(1, channels+1):
@@ -262,6 +379,7 @@ def arff_generate(inp,conds,subs,channels,cl):
     # cl is just the list of conditions that you can input in the main
     relation = 'trust'  # probably going to be passed in in the main file
     conditions = '{'
+    datatype = getDataType(inp)
     #for i in range(conds-1):
     for i in range(len(cl)-1):
         conditions += (cl[i]+', ')
@@ -269,34 +387,124 @@ def arff_generate(inp,conds,subs,channels,cl):
     # this massive loop generates an .arff file for every subject and puts 
     # them in the output folder indicated at the top of this program
     for i in range(1,subs+1):
-        deoxy = inp + '_Deoxy.csv'
-        oxy = inp + '_Oxy.csv'
         marks = inp + '_Marks.csv'
         output = open(inp+'_Arff.arff', 'w') 
-        
-        # read in the values from the Excel files
-        marks = readMarks(marks)
-        deoxy = readfNIRS(deoxy)
-        oxy = readfNIRS(oxy)
+        if datatype.upper() == 'FNIRS':
+            deoxy = inp + '_Deoxy.csv'
+            oxy = inp + '_Oxy.csv'
 
-        # convert the values from the Excel files from strings to integers
-        deoxy = makeNums(deoxy)
-        oxy = makeNums(oxy)
+            # read in the values from the Excel files
+            marks = readMarks(marks)
+            deoxy = readData(deoxy, datatype)
+            oxy = readData(oxy, datatype)
 
-        # writes the header of the .arff file
-        writeHeader(channels,output,conditions,relation)
+            # convert the values from the Excel files from strings to integers
+            deoxy = makeNums(deoxy)
+            oxy = makeNums(oxy)
 
-        # this loop is responsible for going through the deoxy, oxy, and total
-        # data files, running all of the necessary functions, and writing all
-        # of the necessary output to the output file for each task indicated by
-        # each line of the marks file
-        for i in range(len(marks)):
-            task, condition = getTask(deoxy, marks)
-            writeTasks(task,channels,output)
-            task, condition = getTask(oxy, marks)
-            writeTasks(task,channels,output)
-            output.write(str(condition))
-            output.write('\r\n\r\n')  #each task is separated by 2 new lines
-            marks.pop(0)  #proceed to the next task            
+            # writes the header of the .arff file
+            writeHeader(channels,output,conditions,relation,datatype)
+
+            # this loop is responsible for going through the deoxy, oxy, and total
+            # data files, running all of the necessary func tions, and writing all
+            # of the necessary output to the output file for each task indicated by
+            # each line of the marks file
+            for i in range(len(marks)):
+                task, condition = getTask(deoxy, marks)
+                writeTasks(task,channels,output,datatype)
+                task, condition = getTask(oxy, marks)
+                writeTasks(task,channels,output,datatype)
+                output.write(str(condition))
+                output.write('\r\n\r\n')  #each task is separated by 2 new lines
+                marks.pop(0)  #proceed to the next task  
+
+            output.close()
+
+        elif datatype.upper() == 'ECG':
+            ecg = inp 
+            marks = readMarks(marks)
+            ecg = readData(ecg,datatype)
+
+            writeHeader(channels,output,conditions,relation,datatype)
+
+            for i in range(len(marks)):
+                task, conition = getTask(ecg, marks)
+                writeTasks(task,channels,output,datatype)
+                output.write(str(condition))
+                output.write('\r\n\r\n')  #each task is separated by 2 new lines
+                marks.pop(0)  #proceed to the next task 
+
+            output.close()
+
+        elif datatype.upper() == 'EEG':
+            thetaslow = inp + '_ThetaSlow.csv'
+            thetafast = inp + '_ThetaFast.csv'
+            thetatotal = inp + '_ThetaTotal.csv'
+            alphaslow = inp + '_AlphaSlow.csv'
+            alphafast = inp + '_AlphaFast.csv'
+            alphatotal = inp + '_AlphaTotal.csv'
+            beta = inp + '_Beta.csv'
+            gamma = inp + '_Gamma.csv'
+            sigma = inp + '_Sigma.csv'
+
+            # read in values from the excel files
+            marks = readMarks(marks)
+            thetaslow = readData(thetaslow, datatype)
+            thetafast = readData(thetafast, datatype)
+            thetatotal = readData(thetatotal, datatype)
+            alphaslow = readData(alphaslow, datatype)
+            alphafast = readData(alphafast, datatype)
+            alphatotal = readData(alphatotal, datatype)
+            beta = readData(beta, datatype)
+            gamma = readData(gamma, datatype)
+            sigma = readData(sigma, datatype)
+
+            # convert values from the excel files from strings to integers
+            thetaslow = makeNums(thetaslow)
+            thetafast = makeNums(thetafast)
+            thetatotal = makeNums(thetatotal)
+            alphaslow = makeNums(alphaslow)
+            alphafast = makeNums(alphafast)
+            alphatotal = makeNums(alphatotal)
+            beta = makeNums(beta)
+            gamma = makeNums(gamma)
+            sigma = makeNums(sigma)
             
-        output.close()
+            # writes the header of the .arff file
+            writeHeader(channels,output,conditions,relation,datatype)
+
+            for i in range(len(marks)):
+                task, condition = getTask(thetaslow, marks)
+                writeTasks(task,channels,output,datatype)
+                task, condition = getTask(thetafast, marks)
+                writeTasks(task,channels,output,datatype)
+                task, condition = getTask(thetatotal, marks)
+                writeTasks(task,channels,output,datatype)
+                task, condition = getTask(alphaslow, marks)
+                writeTasks(task,channels,output,datatype)
+                task, condition = getTask(alphafast, marks)
+                writeTasks(task,channels,output,datatype)
+                task, condition = getTask(alphatotal, marks)
+                writeTasks(task,channels,output,datatype)
+                task, condition = getTask(beta, marks)
+                writeTasks(task,channels,output,datatype)
+                task, condition = getTask(gamma, marks)
+                writeTasks(task,channels,output,datatype)
+                task, condition = getTask(sigma, marks)
+                writeTasks(task,channels,output,datatype)
+                output.write(str(condition))
+                output.write('\r\n\r\n')  #each task is separated by 2 new lines
+                marks.pop(0)  #proceed to the next task   
+
+            # Remove all of EEG sub-files
+            os.remove(inp + '_ThetaSlow.csv')
+            os.remove(inp + '_ThetaFast.csv')
+            os.remove(inp + '_ThetaTotal.csv')
+            os.remove(inp + '_AlphaSlow.csv')
+            os.remove(inp + '_AlphaFast.csv')
+            os.remove(inp + '_AlphaTotal.csv')
+            os.remove(inp + '_Beta.csv')
+            os.remove(inp + '_Gamma.csv')
+            os.remove(inp + '_Sigma.csv')  
+              
+            output.close()
