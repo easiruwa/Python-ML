@@ -27,6 +27,7 @@ from Orange.classification.svm import SVMLearner
 def Orange_ML_Algorithms(data,header,f,knear):
     csv_row1 = ["Accuracy:"]
     csv_row2 = ["AUC:"]
+    csv_row3 = ["F1:"]
     # Folds are different. First fold is 2, then 5, and then 10.
 
     # K Nearest Neighbors Algorithm with Cross-Validation + Number of Folds
@@ -35,6 +36,11 @@ def Orange_ML_Algorithms(data,header,f,knear):
     res = Orange.evaluation.testing.cross_validation([knn], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Cross-Validation + Number of Folds
     # Has K number of Neighbors (you set this in the main proj.py file)
@@ -42,6 +48,11 @@ def Orange_ML_Algorithms(data,header,f,knear):
     res = Orange.evaluation.testing.cross_validation([knnk], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Cross-Validation + Number of Folds
     # Has 3 Neighbors
@@ -49,6 +60,11 @@ def Orange_ML_Algorithms(data,header,f,knear):
     res = Orange.evaluation.testing.cross_validation([knn3], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Cross-Validation + Number of Folds
     # Has 5 Neighbors
@@ -56,6 +72,11 @@ def Orange_ML_Algorithms(data,header,f,knear):
     res = Orange.evaluation.testing.cross_validation([knn5], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Support Vector Machine Algorithm with Cross-Validation + Number of Folds
     # Nu_SVC (default) and RBF kernel (default)
@@ -63,6 +84,11 @@ def Orange_ML_Algorithms(data,header,f,knear):
     res = Orange.evaluation.testing.cross_validation([svm], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Support Vector Machine Algorithm with Cross-Validation + Number of Folds
     # Nu_SVC (default) and Polynomial SVM Kernel
@@ -71,12 +97,22 @@ def Orange_ML_Algorithms(data,header,f,knear):
     res = Orange.evaluation.testing.cross_validation([svmp], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Naive Bayes Algorithm with Cross-Validation + Number of Folds
     bayes = Orange.classification.bayes.NaiveLearner()
     res = Orange.evaluation.testing.cross_validation([bayes], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Regression Tree Learner Algorithm with Cross-Validation + Number of Folds
     # Max Depth is set to 5.
@@ -84,7 +120,13 @@ def Orange_ML_Algorithms(data,header,f,knear):
     res = Orange.evaluation.testing.cross_validation([tree], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
-    return csv_row1,csv_row2
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
+        
+    return csv_row1,csv_row2, csv_row3
 
 # This is for Cross-Validation Accuracy and AUC (Area-Under-the-Curve)
 # Machine Learning Algorithms are here which also includes best Feature
@@ -96,6 +138,7 @@ def Orange_ML_Algorithms(data,header,f,knear):
 def Orange_ML_Algorithms_FS(data,header,f,knear,n):
     csv_row1 = ["", "Accuracy:"]
     csv_row2 = ["", "AUC:"]
+    csv_row3 = ["", "F1:"]
     # Folds are different. First fold is 2, then 5, and then 10.
 
     # K Nearest Neighbors Algorithm with Cross-Validation + Number of Folds
@@ -108,6 +151,11 @@ def Orange_ML_Algorithms_FS(data,header,f,knear,n):
     res = Orange.evaluation.testing.cross_validation([learner], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Cross-Validation + Number of Folds
     # Includes Feature Selection
@@ -119,6 +167,11 @@ def Orange_ML_Algorithms_FS(data,header,f,knear,n):
     res = Orange.evaluation.testing.cross_validation([learner], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Cross-Validation + Number of Folds
     # Includes Feature Selection
@@ -130,6 +183,11 @@ def Orange_ML_Algorithms_FS(data,header,f,knear,n):
     res = Orange.evaluation.testing.cross_validation([learner], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Cross-Validation + Number of Folds
     # Includes Feature Selection
@@ -141,6 +199,11 @@ def Orange_ML_Algorithms_FS(data,header,f,knear,n):
     res = Orange.evaluation.testing.cross_validation([learner], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Support Vector Machine Algorithm with Cross-Validation + Number of Folds
     # Includes Feature Selection
@@ -152,6 +215,11 @@ def Orange_ML_Algorithms_FS(data,header,f,knear,n):
     res = Orange.evaluation.testing.cross_validation([learner], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Support Vector Machine Algorithm with Cross-Validation + Number of Folds
     # Includes Feature Selection
@@ -164,6 +232,11 @@ def Orange_ML_Algorithms_FS(data,header,f,knear,n):
     res = Orange.evaluation.testing.cross_validation([learner], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Naive Bayes Algorithm with Cross-Validation + Number of Folds
     # Includes Feature Selection
@@ -174,6 +247,11 @@ def Orange_ML_Algorithms_FS(data,header,f,knear,n):
     res = Orange.evaluation.testing.cross_validation([learner], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Regression Tree Learner Algorithm with Cross-Validation + Number of Folds
     # Includes Feature Selection
@@ -185,7 +263,13 @@ def Orange_ML_Algorithms_FS(data,header,f,knear,n):
     res = Orange.evaluation.testing.cross_validation([learner], data, folds=f)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
-    return csv_row1,csv_row2
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
+    
+    return csv_row1,csv_row2,csv_row3
 
 
 # This is for Cross-Validation (Leave-One-Out) Accuracy
@@ -196,6 +280,7 @@ def Orange_ML_Algorithms_FS(data,header,f,knear,n):
 def Orange_ML_Algorithms_Leave_One_Out(data,knear):
     csv_row1 = ["Accuracy:"]
     csv_row2 = ["AUC:"]
+    csv_row3 = ["F1:"]
 
     # K Nearest Neighbors Algorithm with Leave-One-Out
     # Has 0 Neighbors
@@ -203,6 +288,11 @@ def Orange_ML_Algorithms_Leave_One_Out(data,knear):
     res = Orange.evaluation.testing.leave_one_out([knn], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Leave-One-Out
     # Has K number of Neighbors (you set this in the main proj.py file)
@@ -210,6 +300,11 @@ def Orange_ML_Algorithms_Leave_One_Out(data,knear):
     res = Orange.evaluation.testing.leave_one_out([knnk], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Leave-One-Out
     # Has 3 Neighbors
@@ -217,6 +312,11 @@ def Orange_ML_Algorithms_Leave_One_Out(data,knear):
     res = Orange.evaluation.testing.leave_one_out([knn3], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Leave-One-Out
     # Has 5 Neighbors
@@ -224,6 +324,11 @@ def Orange_ML_Algorithms_Leave_One_Out(data,knear):
     res = Orange.evaluation.testing.leave_one_out([knn5], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Support Vector Machine Algorithm with Leave-One-Out
     # Nu_SVC (default) and Polynomial SVM Kernel
@@ -231,6 +336,11 @@ def Orange_ML_Algorithms_Leave_One_Out(data,knear):
     res = Orange.evaluation.testing.leave_one_out([svm], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Support Vector Machine Algorithm with Leave-One-Out
     # Nu_SVC (default) and Polynomial SVM Kernel
@@ -239,12 +349,22 @@ def Orange_ML_Algorithms_Leave_One_Out(data,knear):
     res = Orange.evaluation.testing.leave_one_out([svmp], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Naive Bayes Algorithm with Leave-One-Out
     bayes = Orange.classification.bayes.NaiveLearner()
     res = Orange.evaluation.testing.leave_one_out([bayes], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Regression Tree Learner Algorithm with Leave-One-Out
     # Max Depth is set to 5.
@@ -252,8 +372,13 @@ def Orange_ML_Algorithms_Leave_One_Out(data,knear):
     res = Orange.evaluation.testing.leave_one_out([tree], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
-    return csv_row1,csv_row2
+    return csv_row1,csv_row2,csv_row3
 
 # This is for Leave-One-Out Accuracy and AUC (Area-Under-the-Curve)
 # Machine Learning Algorithms are here which also includes best Feature
@@ -264,6 +389,7 @@ def Orange_ML_Algorithms_Leave_One_Out(data,knear):
 def Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n):
     csv_row1 = ["", "Accuracy:"]
     csv_row2 = ["", "AUC:"]
+    csv_row3 = ["", "F1:"]
 
     # K Nearest Neighbors Algorithm with Leave-One-Out
     # Includes Feature Selection
@@ -275,6 +401,11 @@ def Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n):
     res = Orange.evaluation.testing.leave_one_out([learner], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Leave-One-Out
     # Includes Feature Selection
@@ -286,6 +417,11 @@ def Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n):
     res = Orange.evaluation.testing.leave_one_out([learner], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Leave-One-Out
     # Includes Feature Selection
@@ -297,6 +433,11 @@ def Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n):
     res = Orange.evaluation.testing.leave_one_out([learner], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # K Nearest Neighbors Algorithm with Leave-One-Out
     # Includes Feature Selection
@@ -308,6 +449,11 @@ def Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n):
     res = Orange.evaluation.testing.leave_one_out([learner], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Support Vector Machine Algorithm with Leave-One-Out
     # Includes Feature Selection
@@ -319,6 +465,11 @@ def Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n):
     res = Orange.evaluation.testing.leave_one_out([learner], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Support Vector Machine Algorithm with Leave-One-Out
     # Nu_SVC (default) and Polynomial SVM Kernel
@@ -330,6 +481,11 @@ def Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n):
     res = Orange.evaluation.testing.leave_one_out([learner], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Naive Bayes Algorithm with Leave-One-Out
     # Includes Feature Selection
@@ -340,6 +496,11 @@ def Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n):
     res = Orange.evaluation.testing.leave_one_out([learner], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
 
     # Regression Tree Learner Algorithm with Leave-One-Out
     # Includes Feature Selection
@@ -351,38 +512,48 @@ def Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n):
     res = Orange.evaluation.testing.leave_one_out([learner], data)
     csv_row1.append("%.2f" % Orange.evaluation.scoring.CA(res)[0])
     csv_row2.append("%.2f" % Orange.evaluation.scoring.AUC(res)[0])
-    return csv_row1,csv_row2
+    F1 = Orange.evaluation.scoring.F1(res)[0]
+    if F1 == None:
+        csv_row3.append("0")
+    else:
+        csv_row3.append("%.2f" %F1)
+    
+    return csv_row1,csv_row2,csv_row3
 
 # This is the function that creates exactly how the Excel .csv file should look
-def ML_Algos(data,csv_rows,knear,n):
+def ML_Algos(data,csv_rows,knear,n, top_features):
     # Number of Folds
     headers = ["2 FOLD:","5 FOLD:","10 FOLD:"]
     folds = [2,5,10]
     # For each fold, do machine learning cross-validation
     for i in range(len(headers)):
-        row1,row2 = Orange_ML_Algorithms(data,headers[i],folds[i],knear)
-        r1,r2 = Orange_ML_Algorithms_FS(data,headers[i],folds[i],knear,n/3)
-        r01,r02 = Orange_ML_Algorithms_FS(data,headers[i],folds[i],knear,n/10)
-        r03,r04 = Orange_ML_Algorithms_FS(data,headers[i],folds[i],knear,n)
-        row1 += (r1+r01+r03)
-        row2 += (r2+r02+r04)
+        row1,row2,row3 = Orange_ML_Algorithms(data,headers[i],folds[i],knear)
+        r1,r2,r3 = Orange_ML_Algorithms_FS(data,headers[i],folds[i],knear,n/top_features[0])
+        r01,r02,r03 = Orange_ML_Algorithms_FS(data,headers[i],folds[i],knear,n/top_features[1])
+        r04,r05,r06 = Orange_ML_Algorithms_FS(data,headers[i],folds[i],knear,n)
+        row1 += (r1+r01+r04)
+        row2 += (r2+r02+r05)
+        row3 += (r3+r03+r06)
         csv_rows.append([headers[i],"KNN-0","KNN-K","KNN-3","KNN-5",
                          "SVM", "SVM-POLY", "NB", "TREE", ""]*4)
         csv_rows.append(row1)
         csv_rows.append(row2)
+        csv_rows.append(row3)
         csv_rows.append([])
 
     # For each "Leave-One-Out" do machine learning.
-    row4, row5 = Orange_ML_Algorithms_Leave_One_Out(data,knear)
-    r4,r5 = Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n/3)
-    r05,r06 = Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n/10)
-    r07,r08 = Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n)
-    row4 += (r4+r05+r07)
-    row5 += (r5+r06+r08)
+    row4, row5, row6 = Orange_ML_Algorithms_Leave_One_Out(data,knear)
+    r4,r5,r6 = Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n/top_features[0])
+    r07,r08,r09 = Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n/top_features[1])
+    r10,r11,r12 = Orange_ML_Algorithms_Leave_One_Out_FS(data,knear,n)
+    row4 += (r4+r07+r10)
+    row5 += (r5+r08+r11)
+    row6 += (r6+r09+r12)
     csv_rows.append(["Leave One Out","KNN-0","KNN-K","KNN-3","KNN-5",
                          "SVM", "SVM-POLY", "NB", "TREE", ""]*4)
     csv_rows.append(row4)
     csv_rows.append(row5)
+    csv_rows.append(row6)
     return csv_rows
 
 # The name of the essential main-esque function.
@@ -390,19 +561,12 @@ def ML_Algos(data,csv_rows,knear,n):
 # Feature Selection N/3, Feature Selection N/10,
 # Feature Selection N = (set this, set to 100 currently).
 # Does for the .arff (BSP) and .tab (SAX) into one .csv Excel file.
-def orange(data,knear,n):
-    data1 = Orange.data.Table((data+"_Arff"))
-    data2 = Orange.data.Table((data+"_Sax_Output"))  
+def orange(data,knear,n, top_features):
+    data1 = Orange.data.Table((data))
     csv_rows = [["No Feature Selection BSP","","","","","","","","","",
-                 "Feature Selection N/3 BSP", "","","","","","","","","",
-                 "Feature Selection N/10 BSP","","","","","","","","","",
+                 "Feature Selection N/" + str(top_features[0]) + " BSP", "","","","","","","","","",
+                 "Feature Selection N/" + str(top_features[1]) + " BSP","","","","","","","","","",
                  "Feature Selection N = 100 BSP"]]
     
-    csv_rows = ML_Algos(data1,csv_rows,knear,n)
-    csv_rows.append([])
-    csv_rows.append(["No Feature Selection SAX","","","","","","","","","",
-                 "Feature Selection N/3 SAX", "","","","","","","","","",
-                 "Feature Selection N/10 SAX","","","","","","","","","",
-                 "Feature Selection N = 100 SAX"])
-    
-    return ML_Algos(data2,csv_rows,knear,n)
+    csv_rows = ML_Algos(data1,csv_rows,knear,n, top_features)
+    return csv_rows

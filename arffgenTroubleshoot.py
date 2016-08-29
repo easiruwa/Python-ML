@@ -1,7 +1,6 @@
 ################################################################################
-#                 HAMILTON COLLEGE SUMMER RESEARCH 2016                        #
-#   Eseosa Asiruwa '18, Matt Goon '18, Mitchel Herman '19, Sindy Liu '18       #
-#                                                                              #
+#                 HAMILTON COLLEGE SUMMER RESEARCH 2015                        #
+#                  Russell Glick '17 and Ben Sklar '18                         #
 #             Machine Learning in Python Arff File Generator                   #
 #                              arffgen.py                                      #
 #   (Original, pre-edited addition created by Diane Paverman and Eric Murray   #
@@ -10,9 +9,12 @@
 #   This attachment program is called in the main project and is used to       #
 #   create an arff file that contains Time Series Representation of the data   #
 #   that could be passed into Orange.                                          #
-#                                                                              #                                                           
 #                                                                              #
+#   Notices: There is no main in this program. Below comments have not been    #
+#            edited. This program does not need to be changed for different    #
+#            files.                                                            #
 #                                                                              #
+#                         DON'T TOUCH THIS PROGRAM                             #
 ################################################################################
 
 import csv
@@ -26,6 +28,7 @@ from biosppy.signals import eda
 from biosppy.signals import resp
 
 def getDataType(name):
+    print("NAME: " +name)
     firstUnderscore = False
     for i in range(len(name)):
         firstUnderscore = name[i] == '_'
@@ -65,12 +68,14 @@ def readData(name, datatype):
     rows2 = []
     
     if datatype.upper() == 'FNIRS':
+        print("name: " + name)
         # the fNIRS data doesn't actually start until the 42nd line
         # so we remove the unwanted lines here
         for i in range(2):
             rows1.pop(0)
         #there are also extra columns after the fNIRS data
         #so we remove those unwanted columns here
+        print(length)
         for i in range(length - 2): # -2 
             rows2.append(rows1[i][0:53])
         return rows2
@@ -889,11 +894,14 @@ def arff_generate(inp,conds,subs,channels,cl, SAX, SAX_Word, SAX_Letter, samplin
     relation = 'trust'  # probably going to be passed in in the main file
     conditions = '{'
     datatype = getDataType(inp)
+    print("HERES THE DATA TYPE IN ARFFGEN:" + datatype)
     #for i in range(conds-1):
     for i in range(len(cl)-1):
         conditions += (cl[i]+', ')
     conditions += (cl[len(cl)-1]+'}')
 
+    print ("conditions")
+    print (conditions)
     # this massive loop generates an .arff file for every subject and puts 
     # them in the output folder indicated at the top of this program
     for i in range(1,subs+1):

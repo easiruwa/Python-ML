@@ -1,21 +1,21 @@
 ################################################################################
 #                 HAMILTON COLLEGE SUMMER RESEARCH 2016                        #
-#   Eseosa Asiruwa '18, Matt Goon '18, Mitchel Herman '19, Sindy Liu '18       #
 #                                                                              #
 #                 Machine Learning in Python Main Project                      #
 #                               proj.py                                        #
 #                                                                              #
 #   This Program will allow the user to run Symbolic Aggregate Approximation   #
-#   and other miscellaneous Machine Learning techniques on data sets from      #
-#   multiple physiological sensors, specifically: fNIRS, EEG, EDA, ECG, and    #
-#   Respiration. See the attatched Manual for additional instructions.         #
+#   and other miscellaneous Machine Learning techniques (see the attached      #
+#   Diane Paverman/Eric Murray and Orange files) on an inputted set of data    #
+#   and condition files. The names of these files, the choice to use ROI or    #
+#   zscore, the Conditions being tested,lengths for SAX, and a couple of       #
+#   parameters for Orange can be changed below in the main function,           #
+#   highlighted by comments in capital letters in the section USER INPUTS.     #
 #   Enjoy.                                                                     #
 #                                                                              #
 #   Credits: http://www.cs.ucr.edu/~eamonn/SAX.htm and                         #
 #            https://github.com/nphoff/saxpy/blob/master/saxpy.py for SAX      #
 #            instruction and the imported SAX class                            #
-#                                                                              #
-#            Ben Sklar and Russel Glick for their framework for proj.py        #
 #                                                                              #
 #            Diane Paverman and Eric Murray (Hamilton Summer Research 2012)    #
 #            for their arff file generator                                     #
@@ -247,6 +247,7 @@ def getDataType(name):
                 DataType += ch
                 i += 1
                 ch = name[i + 1]
+            print(DataType)
             return DataType
 #returns the subject Number(eg. 2002) upon being given the name of an all data file
 #The format should be SUBJECTNUMBER_SENSOR_....csv
@@ -310,6 +311,8 @@ def combineDataTypes(Data, numChans):
     for i in range (len(Data)):
         arffLine[getDataType(Data[i])] = getAttributeCount(Data[i]) / numChans[getDataType(Data[i])]
 
+    print(arffLine)
+
     for i in range(len(Data)):
         cur = []
         with open(Data[i]) as f:
@@ -333,6 +336,7 @@ def combineDataTypes(Data, numChans):
             cur.pop(0)
             All_Data.append(cur[0])
             cur.pop(0)
+            print("CUR NOW")
             #Calculate the # of instances
             while cur:
                 cur.pop(0)
@@ -350,12 +354,14 @@ def combineDataTypes(Data, numChans):
     #remove the condition number from the end of all of the instances except for the last
     #one and fuse them.
     for i in range(len(Data)):
+        print(i)
         cur = []
         with open(Data[i]) as f:
             for line in f:
                 cur.append(line)
         for z in range(arffLine[getDataType(Data[i])] * numChans[getDataType(Data[i])] + 3):
             cur.pop(0)
+        print("LEN of DATALINES: ", DataLines)
         for x in range(DataLines):
             lineAdding = cur[x]
             if i != (len(Data) - 1) and x % 2 == 0:
@@ -385,9 +391,11 @@ def pairROI(num, files):
         return name
 
 def arffToTab(arff_name):
+    print("CREATING TAB FILE")
 
     convert(arff_name)
 
+    print("TAB FILE CREATED")
 
 #===============================================================================
 #===========================RUNNING EVERYTHING==================================
@@ -402,17 +410,23 @@ def run(server_url, local, subject,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZSco
         ECG_SAX, ECG_SAX_Word, ECG_SAX_Letter, Each_ML, top_features, pseudo_sampling,
         ECG_sampling_rate, EDA_sampling_rate, Resp_sampling_rate, fNIRS_ROI_Filenames):
 
+    print("STARTED RUNNING")
+
     #Dictionary for the number of channels in each data type
     numChans = {}
 
     #Gets the number of chans for each data type in this subject
     for data_name in subject:
+        print(local)
         if(local):
+            print("RUNNING LOCAL")
             data = open_csv(data_name)
         else:
+            print("RUNNING ON SERVER")
             data = open_url(server_url, data_name)
         datatype = getDataType(data_name)
         if datatype.upper() == "FNIRS":
+            #print(len(data[0]))
             numChans[datatype] = len(data[0])/2 #split for oxy/deoxy
         elif datatype.upper() == "EEG":
             numChans[datatype] = len(data[0])/9 #split for the 9 data types (eg. thetaslow, etc)
@@ -426,6 +440,7 @@ def run(server_url, local, subject,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZSco
         conds_name = head + '_' + datatype +'_conditions.csv' #EDITED FROM head + '_Conditions_valence'
 
 #==========================INPUTTING DATA FILES=================================
+        print("OPENING FILES")
 
         # open files
         data = open_csv(data_name) #EDITED from open_url
@@ -438,12 +453,14 @@ def run(server_url, local, subject,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZSco
         conds = cond_format(conds)
         num_conds = (len(conds)-1)/2
 
+        print("FILES OPENED")
 
     #===========================Z-SCORING THE DATA==================================
 
         # NOTE: This section is optional, might not be used every time
 
         if datatype.upper() == 'FNIRS' and fNIRS_ZScore:
+            print("Z Scored fNIRS")
             for j in range(num_chans*2):
                 zary = []
                 for i in range(len(data)-2):
@@ -453,6 +470,7 @@ def run(server_url, local, subject,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZSco
                     data[i+2][j] = zary[i]
 
         elif datatype.upper() == 'EEG' and EEG_ZScore:
+            print("Z Scored EEG")
             for j in range(num_chans*9):
                 zary = []
                 for i in range(len(data)-9):
@@ -469,6 +487,7 @@ def run(server_url, local, subject,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZSco
                 zary = stats.zscore(zary)
                 for i in range(len(data)-1):
                     data[i+1][j] = zary[i]
+            print("This should not print. Keep Respiration ZScore false for now")
 
         elif datatype.upper() == "EDA" and EDA_ZScore:
             for j in range(num_chans):
@@ -479,6 +498,7 @@ def run(server_url, local, subject,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZSco
                 zary = stats.zscore(zary)
                 for i in range(len(data)-5): # 5 to account for 2 rows of labels and 2
                     data[i+2][j] = zary[i]      # empty spaces
+            print ("This should also not print. EDA zscore should be false for now.")
 
         elif datatype.upper() == "ECG" and ECG_ZScore:
             for j in range(num_chans):
@@ -490,12 +510,14 @@ def run(server_url, local, subject,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZSco
                     data[i+1][j] = zary[i]
 
             #when we have it, write ecg zscore here
+            print ("why is ecg zscore true???")
 
 
     #=======================REGION OF INTEREST ANALYSIS=============================
 
         # NOTE: This section is optional, might not be used every time
         if ROI and datatype.upper() == "FNIRS":
+            print("ROI")
             # Reading the ROI lines from a file
             ROI_lines = []
             #with open('ROI_'+head+'.txt','rb') as f:
@@ -538,13 +560,16 @@ def run(server_url, local, subject,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZSco
             numChans["fNIRS"] = len(data[0])/2
 
 #========================CONVERTING TO MARKS FILE===============================
+        print("CONVERTING TO MARKS FILES")
 
         # Separate the oxy and deoxy data for the arff file generator
         write_sep_data(data,num_chans,head +'_' + datatype,datatype)
         marks = [['start','end','condition']]
         for i in range(num_conds+1):
+            #print("Num_conds :" + str(num_conds))
             #if i == 0 or Conditions.find(str(i)) == -1:
             if i == 0 or str(i) not in Conditions:
+                #print("NOT IN" + str(i))
                 continue
             for j in range(len(conds[i*2])-2):
                 row = [str(conds[i*2-1][j+2]),
@@ -555,6 +580,8 @@ def run(server_url, local, subject,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZSco
         # formats the Conditions file into a [starts,ends, condition] file to
         # be used in the arff file generator
         write_csv(head + '_' + datatype +'_Marks.csv',marks)
+
+        print("CONVERTED TO MARKS FILE")
 
 #========================PASSING TO ARFFGEN====================================
 # arff file generator passed in, pass 1 into subjects until further notice (Comment from summer 2015)
@@ -584,12 +611,18 @@ def run(server_url, local, subject,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZSco
             arff_name = head + '_' + datatype + '_Arff'
             arffToTab(arff_name)
 
+        print("PASSED TO ARFF GEN")
+
 #=============================PASSING IN ORANGE=================================
+
+
+    print("PASSING TO ORANGE")
 
     #Creates an array of arff files for each sensor in the subject to be fused
     Arffs = []
     for item in subject:
         name = getSubjectNumber(item) + '_' + getDataType(item) + "_Arff.arff"
+        print(name)
         Arffs.append(name)
 
     #combineDataTypes returns the # of attributes
@@ -602,9 +635,15 @@ def run(server_url, local, subject,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZSco
 
     if Each_ML:
         #if Each_ML is true run machine learning
+        print ("runing individual machine learning on " + head)
         write_csv((head+'_ML_Data'+Extension),orange("fuse_" + head + "_Arff.arff",num_k,n_num, top_features))
+    else:
+        print ("did not run individual machine learning")
 
     return length
+
+    print("PASSED TO ORANGE")
+
 #===============================================================================
 #=================================MAIN==========================================
 #===============================================================================
@@ -698,6 +737,7 @@ def main():
         # Bool to keep track of whether there are errors.
         error_bool = False
 
+        print("Reading in parameters from text file...")
 
         #-REGULAR EXPRESSIONS------------------------------------------------------#
 
@@ -1447,7 +1487,54 @@ def main():
 
         if (error_bool):
             sys.exit()
-        
+        else:
+            print("Successfully read-in parameters from text file.")
+
+
+        #-TESTS--------------------------------------------------------------------#
+        print("fNIRS: ", fNIRS)
+        print("EEG: ", EEG)
+        print("Respiration: ", Respiration)
+        print("ECG: ", ECG)
+        print("EDA: ", EDA)
+        print("fNIRS_ZScore: ", fNIRS_ZScore)
+        print("fNIRS_ROI: ", fNIRS_ROI)
+        print("fNIRS_ROI_Filenames: ", fNIRS_ROI_Filenames)
+        print("EEG_ZScore: ", EEG_ZScore)
+        print("Respiration_ZScore: ", Respiration_ZScore)
+        print("Respiration_Sampling_Rate: ", Respiration_Sampling_Rate)
+        print("ECG_ZScore: ", ECG_ZScore)
+        print("ECG_Sampling_Rate: ", ECG_Sampling_Rate)
+        print("EDA_ZScore: ", EDA_ZScore)
+        print("EDA_Sampling_Rate: ", EDA_Sampling_Rate)
+        print("fNIRS_SAX: ", fNIRS_SAX)
+        print("fNIRS_SAX_Word: ", fNIRS_SAX_Word)
+        print("fNIRS_SAX_Letter: ", fNIRS_SAX_Letter)
+        print("EEG_SAX: ", EEG_SAX)
+        print("EEG_SAX_Word: ", EEG_SAX_Word)
+        print("EEG_SAX_Letter: ", EEG_SAX_Letter)
+        print("Respiration_SAX: ", Respiration_SAX)
+        print("Respiration_SAX_Word: ", Respiration_SAX_Word)
+        print("Respiration_SAX_Letter: ", Respiration_SAX_Letter)
+        print("ECG_SAX: ", ECG_SAX)
+        print("ECG_SAX_Word: ", ECG_SAX_Word)
+        print("ECG_SAX_Letter: ", ECG_SAX_Letter)
+        print("EDA_SAX: ", EDA_SAX)
+        print("EDA_SAX_Word: ", EDA_SAX_Word)
+        print("EDA_SAX_Letter: ", EDA_SAX_Letter)
+        print("Conditions: ", Conditions)
+        print("num_k: ", num_k)
+        print("n_num: ", n_num)
+        print("Top Features: ", top_features)
+        print("Each_arff: ", Each_arff)
+        print("All_arff: ", All_arff)
+        print("Each_Tab: ", Each_Tab)
+        print("All_Tab: ", All_Tab)
+        print("Each_ML: ", Each_ML)
+        print("All_ML: ", All_ML)
+        print("Extension: ", Extension)
+        print("Local: ", Local)
+        print("URL: ", URL)
 
     f.closed
 
@@ -1468,6 +1555,8 @@ def main():
     with open('data_filenames.txt', 'r') as df:
         # Bool to keep track of whether there are errors.
         error_bool = False
+
+        print("Reading in data filenames from text file...")
 
         #-REGULAR EXPRESSIONS------------------------------------------------------#
 
@@ -1786,7 +1875,16 @@ def main():
                 for item in subject_error_list:
                     print(item)
             sys.exit()
+        else:
+            print("Successfully read-in data filenames from text file.")
 
+
+        #-TESTS--------------------------------------------------------------------#
+        print("fNIRS_Data_Filenames: ", fNIRS_Data_Filenames)
+        print("EEG_Data_Filenames: ", EEG_Data_Filenames)
+        print("Respiration_Data_Filenames: ", Respiration_Data_Filenames)
+        print("ECG_Data_Filenames: ", ECG_Data_Filenames)
+        print("EDA_Data_Filenames: ", EDA_Data_Filenames)
     df.closed
 
     # FILE INPUTS
@@ -1798,8 +1896,12 @@ def main():
 
     Subjects = groupSubjects(Files)
 
+    print(Files)
+    print(Subjects)
+
     # Running the single files
     for item in Subjects:
+        print("THIS IS WHAT LOCAL IS BEFORE RUN:" , Local)
         heads=run(URL, Local, item,num_k,n_num,Conditions,fNIRS_ZScore, EEG_ZScore, Respiration_ZScore, EDA_ZScore, ECG_ZScore, fNIRS_ROI,Extension, Each_Tab,
              fNIRS_SAX, fNIRS_SAX_Word, fNIRS_SAX_Letter,
              EEG_SAX, EEG_SAX_Word, EEG_SAX_Letter,
@@ -1811,11 +1913,15 @@ def main():
     # Running the single concatenated file
     concatenate(len(Subjects),Subjects,heads,"Across_Subject_Data.arff") #3828 replace with heads
 
+    print("Still Running 2")
+
     if All_ML:
+        print ("All ML is true")
         #Writing ML Data for concatenated files
         name = 'Across_Subject_Data'  #--Maybe change this to read 'All_extension_data
         write_csv((name+'_ML_Data'+Extension),orange(name,num_k,n_num, top_features))
 
+    print("Still Running 3")
     # Running the Leaving a file out concatenated files
     for i in range(len(Subjects)):#Edited Loop   #--Again make it run through Files
         left = []
@@ -1827,11 +1933,15 @@ def main():
         concatenate(len(Subjects) - 1, left, heads, name + "_Arff.arff")
         #if All_ML is true, then run all paraticipant minus one machine learning
         if All_ML:
+            print ("ALL_ML is True, running all participant minus one Machine Learning")
             write_csv(name+'_ML_Data'+Extension,
                       orange_two(test_set,num_k,n_num, top_features))
+        else:
+            print ("ALL_ML is False.")
 
     #if All_Tab is true, then create tab files for the all participant data files
     if All_Tab:
+        print ("All tab is true")
         arffToTab("Across_Subject_Data")
         for item in Subjects:
             arff_file = "Across_Subject_Data_No_" + getSubjectNumber(item[0]) + "_Arff"
@@ -1839,19 +1949,25 @@ def main():
 
     #if Each_arff is false, then delete individual arff files
     if Each_arff == False:
+        print ("each_arff is false. Delete individual arff files.")
         for item in Subjects:
             for i in item:
                 arff_file = str(getDataType(i)) + "_" + str(getSubjectNumber(i)) + "_Arff.arff"
                 os.remove(arff_file)
             arff_file = "fuse_" + str(getSubjectNumber(item[0])) + "_Arff.arff"
             os.remove(arff_file)
+    else:
+        print ("each arff is true. nothing done")
 
     #if All_arff is false, then delete Across_Subject_Data.arff and all th Across_Subject_Data_No_Subject#.arff
     if All_arff == False:
+        print ("All arff is false")
         os.remove("Across_Subject_Data.arff")
         for item in Subjects:
             arff_file = "Across_Subject_Data_No_" + getSubjectNumber(item[0]) + "_Arff.arff"
             os.remove(arff_file)
+    else:
+        print ("All arff is true. nothing done")
 
 
 #===============================================================================

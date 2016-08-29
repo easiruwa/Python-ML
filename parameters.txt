@@ -1,0 +1,54 @@
+Sensors
+fNIRS: False
+EEG: False
+Respiration: False
+ECG: False
+EDA: True
+
+Feature Parameters
+fNIRS Z-Score: False
+fNIRS ROI: False
+fNIRS ROI Filenames:
+EEG Z-Score: False
+Respiration Z-Score: False
+Respiration Sampling Rate: 0
+ECG Z-Score: False
+ECG Sampling Rate: 0
+EDA Z-Score: False
+EDA Sampling Rate: 1000
+
+SAX Parameters
+fNIRS SAX: False
+fNIRS SAX Word: 0
+fNIRS SAX Letter: 0
+EEG SAX: False
+EEG SAX Word: 0
+EEG SAX Letter: 0
+Respiration SAX: False
+Respiration SAX Word: 0
+Respiration SAX Letter: 0
+ECG SAX: False
+ECG SAX Word: 0
+ECG SAX Letter: 0
+EDA SAX: False
+EDA SAX Word: 0
+EDA SAX Letter: 0
+
+Machine Learning Parameters
+Conditions: 1, 2
+num_k: 10
+n_num: 100
+Top Features: 1/10, 1/7
+
+Output
+Each_arff: True
+All_arff: True
+Each_Tab: False
+All_Tab: False
+Each_ML: True
+All_ML: True
+
+Extension: .csv
+
+Local = False
+URL = 
